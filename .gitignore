@@ -1,0 +1,40 @@
+# Build outputs
+build/
+bin/
+lib/
+out/
+_build/
+
+# IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+.idea/
+CMakeSettings.json
+compile_commands.json
+
+# C++ artifacts
+*.obj
+*.o
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.a
+*.dll
+*.so
+*.dylib
+*.exe
+
+# Testing & Coverage
+Testing/
+*.gcda
+*.gcno
+*.gcov
+Coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
