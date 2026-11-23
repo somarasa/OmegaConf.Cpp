@@ -43,14 +43,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Swap (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo fallocate -l 4G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-
       - name: Configure CMake (Windows)
         if: runner.os == 'Windows'
         run: |
