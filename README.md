@@ -31,7 +31,7 @@ include(FetchContent)
 FetchContent_Declare(
     omegaconf
     GIT_REPOSITORY https://github.com/somarasa/OmegaConf.Cpp.git
-    GIT_TAG        master
+    GIT_TAG        main
 )
 FetchContent_MakeAvailable(omegaconf)
 
