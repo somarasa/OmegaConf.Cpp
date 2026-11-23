@@ -14,19 +14,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             use_cpp20: "ON"
             shared: "OFF"
             desc: "Windows MSVC C++20 Static"
-          - os: windows-latest
+          - os: windows-2022
             use_cpp20: "OFF"
             shared: "OFF"
             desc: "Windows MSVC C++17 Static"
-          - os: windows-latest
+          - os: windows-2022
             use_cpp20: "ON"
             shared: "ON"
             desc: "Windows MSVC C++20 DLL"
-          - os: windows-latest
+          - os: windows-2022
             use_cpp20: "OFF"
             shared: "ON"
             desc: "Windows MSVC C++17 DLL"

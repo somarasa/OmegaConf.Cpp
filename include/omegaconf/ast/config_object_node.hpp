@@ -361,7 +361,7 @@ private:
         if (node->is_value()) {
             const auto* vn = node->as_value();
             if (vn->is_missing_marker()) {
-                os << "'???'";
+                os << "'??" "?'";
             } else if (vn->is_null()) {
                 os << "None";
             } else if (vn->is_bool()) {

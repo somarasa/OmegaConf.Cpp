@@ -85,7 +85,7 @@ private:
 class MissingValueMarkerException : public OmegaConfException {
 public:
     explicit MissingValueMarkerException(std::string key, SourceInfo source = SourceInfo::unknown())
-        : OmegaConfException("Configuration key '" + key + "' is marked as mandatory ('???') but was never supplied with a concrete value.", std::move(source)),
+        : OmegaConfException("Configuration key '" + key + "' is marked as mandatory ('??" "?') but was never supplied with a concrete value.", std::move(source)),
           key_(std::move(key)) {}
 
     [[nodiscard]] const std::string& key() const noexcept { return key_; }
