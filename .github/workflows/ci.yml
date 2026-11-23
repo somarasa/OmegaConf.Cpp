@@ -15,29 +15,40 @@ jobs:
       matrix:
         include:
           - os: windows-2022
+            header_only: "ON"
             use_cpp20: "ON"
             shared: "OFF"
-            desc: "Windows MSVC C++20 Static"
+            desc: "Windows MSVC C++20 Header-Only"
           - os: windows-2022
+            header_only: "ON"
             use_cpp20: "OFF"
             shared: "OFF"
-            desc: "Windows MSVC C++17 Static"
+            desc: "Windows MSVC C++17 Header-Only"
           - os: windows-2022
+            header_only: "OFF"
             use_cpp20: "ON"
             shared: "ON"
-            desc: "Windows MSVC C++20 DLL"
+            desc: "Windows MSVC C++20 Compiled DLL"
           - os: windows-2022
+            header_only: "OFF"
             use_cpp20: "OFF"
-            shared: "ON"
-            desc: "Windows MSVC C++17 DLL"
+            shared: "OFF"
+            desc: "Windows MSVC C++17 Compiled Static"
           - os: ubuntu-latest
+            header_only: "ON"
             use_cpp20: "ON"
             shared: "OFF"
-            desc: "Ubuntu GCC C++20 Static"
+            desc: "Ubuntu GCC C++20 Header-Only"
           - os: ubuntu-latest
+            header_only: "ON"
             use_cpp20: "OFF"
             shared: "OFF"
-            desc: "Ubuntu GCC C++17 Static"
+            desc: "Ubuntu GCC C++17 Header-Only"
+          - os: ubuntu-latest
+            header_only: "OFF"
+            use_cpp20: "ON"
+            shared: "OFF"
+            desc: "Ubuntu GCC C++20 Compiled Static"
 
     steps:
       - name: Checkout repository
@@ -48,6 +59,7 @@ jobs:
         run: |
           cmake -B build -G "Visual Studio 17 2022" -A x64 `
             -DCMAKE_BUILD_TYPE=Release `
+            -DOMEGACONF_HEADER_ONLY=${{ matrix.header_only }} `
             -DOMEGACONF_USE_CPP20=${{ matrix.use_cpp20 }} `
             -DBUILD_SHARED_LIBS=${{ matrix.shared }} `
             -DOMEGACONF_BUILD_TESTS=ON `
@@ -58,6 +70,7 @@ jobs:
         run: |
           cmake -B build \
             -DCMAKE_BUILD_TYPE=Release \
+            -DOMEGACONF_HEADER_ONLY=${{ matrix.header_only }} \
             -DOMEGACONF_USE_CPP20=${{ matrix.use_cpp20 }} \
             -DBUILD_SHARED_LIBS=${{ matrix.shared }} \
             -DOMEGACONF_BUILD_TESTS=ON \

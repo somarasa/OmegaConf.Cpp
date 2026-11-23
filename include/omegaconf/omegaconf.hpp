@@ -38,7 +38,9 @@
 namespace omegaconf {
 
 /// @brief Returns the version string of OmegaConf.Cpp.
-[[nodiscard]] std::string_view version() noexcept;
+[[nodiscard]] inline constexpr std::string_view version() noexcept {
+    return "0.1.0";
+}
 
 /**
  * @brief Static utility facade inspired by Python's OmegaConf and hydra.utils APIs.
@@ -107,3 +109,6 @@ public:
 using OmegaConf = OmegaConfig;
 
 } // namespace omegaconf
+
+#include "omegaconf/ast/config_node_impl.hpp"
+

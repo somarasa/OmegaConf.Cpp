@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.24)
 project(OmegaConfCpp VERSION 0.1.0 LANGUAGES CXX)
 
 # Options
-option(BUILD_SHARED_LIBS "Build shared libraries (.dll)" OFF)
+option(OMEGACONF_HEADER_ONLY "Build OmegaConf as a header-only library" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries (.dll / .so) in compiled mode" OFF)
 option(OMEGACONF_BUILD_TESTS "Build test suite" ON)
 option(OMEGACONF_BUILD_SAMPLES "Build sample applications" ON)
 option(OMEGACONF_USE_CPP20 "Target C++20 standard (OFF targets C++17)" ON)
@@ -31,37 +32,53 @@ include(cmake/Dependencies.cmake)
 file(GLOB_RECURSE OMEGACONF_HEADERS CONFIGURE_DEPENDS "include/omegaconf/*.hpp")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${OMEGACONF_HEADERS})
 
-# Core Library
-add_library(omegaconf
-    ${OMEGACONF_HEADERS}
-    src/version.cpp
-    src/config_node.cpp
-)
-
-target_include_directories(omegaconf
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
-# Compiler Warnings & Strictness
-if(MSVC)
-    target_compile_options(omegaconf PRIVATE /W4 /WX /permissive- /utf-8)
+# Core Library (Header-only by default, compiled when OMEGACONF_HEADER_ONLY=OFF)
+if(OMEGACONF_HEADER_ONLY)
+    add_library(omegaconf INTERFACE)
+    target_include_directories(omegaconf
+        INTERFACE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+    )
+    target_compile_definitions(omegaconf INTERFACE OMEGACONF_HEADER_ONLY=1)
+    target_link_libraries(omegaconf
+        INTERFACE
+            ryml::ryml
+            exprtk
+    )
+    if(OMEGACONF_USE_CPP20)
+        target_link_libraries(omegaconf INTERFACE glaze::glaze)
+    endif()
 else()
-    target_compile_options(omegaconf PRIVATE -Wall -Wextra -Wpedantic -Werror -Wno-trigraphs)
+    add_library(omegaconf
+        ${OMEGACONF_HEADERS}
+        src/version.cpp
+        src/config_node.cpp
+    )
+    target_include_directories(omegaconf
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+        PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
+    )
+    target_compile_definitions(omegaconf PUBLIC OMEGACONF_COMPILED_LIB=1)
+    if(MSVC)
+        target_compile_options(omegaconf PRIVATE /W4 /WX /permissive- /utf-8)
+    else()
+        target_compile_options(omegaconf PRIVATE -Wall -Wextra -Wpedantic -Werror -Wno-trigraphs)
+    endif()
+    target_link_libraries(omegaconf
+        PUBLIC
+            ryml::ryml
+            exprtk
+    )
+    if(OMEGACONF_USE_CPP20)
+        target_link_libraries(omegaconf PUBLIC glaze::glaze)
+    endif()
 endif()
 
-# Link dependencies to core library
-target_link_libraries(omegaconf
-    PUBLIC
-        ryml::ryml
-        exprtk
-)
-if(OMEGACONF_USE_CPP20)
-    target_link_libraries(omegaconf PUBLIC glaze::glaze)
-endif()
+add_library(omegaconf::omegaconf ALIAS omegaconf)
 
 # Test Suite
 if(OMEGACONF_BUILD_TESTS)

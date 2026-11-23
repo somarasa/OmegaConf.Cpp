@@ -1,6 +1,11 @@
 #include "omegaconf/ast/config_node.hpp"
 #include "omegaconf/serialization/yaml_serializer.hpp"
 #include "omegaconf/serialization/json_serializer.hpp"
+#include "omegaconf/ast/config_object_node.hpp"
+#include "omegaconf/ast/config_value_node.hpp"
+#include <sstream>
+
+#if defined(OMEGACONF_COMPILED_LIB)
 
 namespace omegaconf {
 
@@ -33,3 +38,5 @@ std::string ConfigNode::to_toml() const {
 }
 
 } // namespace omegaconf
+
+#endif // OMEGACONF_COMPILED_LIB

@@ -1,9 +1,9 @@
 #include "omegaconf/omegaconf.hpp"
 
-namespace omegaconf {
+#if defined(OMEGACONF_COMPILED_LIB)
 
-std::string_view version() noexcept {
-    return "0.1.0";
+namespace omegaconf {
+// Explicit anchor translation unit for compiled library / Windows DLL export
 }
 
-} // namespace omegaconf
+#endif // OMEGACONF_COMPILED_LIB
