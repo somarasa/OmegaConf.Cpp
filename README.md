@@ -1,6 +1,11 @@
 # OmegaConf.Cpp
 
-A hierarchical, composable configuration framework for modern C++ (C++20) inspired by Python's **Hydra** and **OmegaConf**.
+[![CI](https://github.com/somarasa/OmegaConf.Cpp/actions/workflows/ci.yml/badge.svg)](https://github.com/somarasa/OmegaConf.Cpp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![C++ Standard](https://img.shields.io/badge/C%2B%2B-17%20%7C%2020%2B-00599C?logo=c%2B%2B)](CMakeLists.txt)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg)](CMakeLists.txt)
+
+A hierarchical, composable configuration framework for modern C++ (C++20 & C++17) inspired by Python's **Hydra** and **OmegaConf**.
 
 ## Features (Roadmap)
 - 📂 **Directory-based Config Groups & Defaults Lists** with `_self_` precedence.
