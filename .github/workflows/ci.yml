@@ -43,6 +43,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Swap (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo fallocate -l 4G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+
       - name: Configure CMake (Windows)
         if: runner.os == 'Windows'
         run: |
@@ -63,8 +71,13 @@ jobs:
             -DOMEGACONF_BUILD_TESTS=ON \
             -DOMEGACONF_BUILD_SAMPLES=ON
 
-      - name: Build
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
         run: cmake --build build --config Release --parallel
+
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        run: cmake --build build --config Release --parallel 2
 
       - name: Run Tests
         run: ctest --test-dir build --output-on-failure -C Release
