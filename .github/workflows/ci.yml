@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} - C++${{ matrix.std }} (${{ matrix.link }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        std: [17, 20]
+        link: [static]
+        include:
+          - os: windows-latest
+            std: 20
+            link: shared
+          - os: windows-latest
+            std: 17
+            link: shared
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.28'
+
+      - name: Configure CMake
+        shell: bash
+        run: |
+          USE_CPP20="ON"
+          if [ "${{ matrix.std }}" = "17" ]; then
+            USE_CPP20="OFF"
+          fi
+          
+          SHARED_LIBS="OFF"
+          if [ "${{ matrix.link }}" = "shared" ]; then
+            SHARED_LIBS="ON"
+          fi
+
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DOMEGACONF_USE_CPP20=${USE_CPP20} \
+            -DBUILD_SHARED_LIBS=${SHARED_LIBS} \
+            -DOMEGACONF_BUILD_TESTS=ON \
+            -DOMEGACONF_BUILD_SAMPLES=ON
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --config Release --parallel
+
+      - name: Run Tests
+        shell: bash
+        run: ctest --test-dir build --output-on-failure -C Release
