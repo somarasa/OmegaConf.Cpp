@@ -16,6 +16,7 @@
 #include <optional>
 #include <type_traits>
 #include <cctype>
+#include <cstring>
 
 #if OMEGACONF_CPP20
 #include <glaze/glaze.hpp>

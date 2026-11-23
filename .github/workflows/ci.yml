@@ -8,55 +8,63 @@ on:
 
 jobs:
   build-and-test:
-    name: ${{ matrix.os }} - C++${{ matrix.std }} (${{ matrix.link }})
+    name: ${{ matrix.desc }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
-        std: [17, 20]
-        link: [static]
         include:
           - os: windows-latest
-            std: 20
-            link: shared
+            use_cpp20: "ON"
+            shared: "OFF"
+            desc: "Windows MSVC C++20 Static"
           - os: windows-latest
-            std: 17
-            link: shared
+            use_cpp20: "OFF"
+            shared: "OFF"
+            desc: "Windows MSVC C++17 Static"
+          - os: windows-latest
+            use_cpp20: "ON"
+            shared: "ON"
+            desc: "Windows MSVC C++20 DLL"
+          - os: windows-latest
+            use_cpp20: "OFF"
+            shared: "ON"
+            desc: "Windows MSVC C++17 DLL"
+          - os: ubuntu-latest
+            use_cpp20: "ON"
+            shared: "OFF"
+            desc: "Ubuntu GCC C++20 Static"
+          - os: ubuntu-latest
+            use_cpp20: "OFF"
+            shared: "OFF"
+            desc: "Ubuntu GCC C++17 Static"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup CMake
-        uses: jwlawson/actions-setup-cmake@v2
-        with:
-          cmake-version: '3.28'
-
-      - name: Configure CMake
-        shell: bash
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
         run: |
-          USE_CPP20="ON"
-          if [ "${{ matrix.std }}" = "17" ]; then
-            USE_CPP20="OFF"
-          fi
-          
-          SHARED_LIBS="OFF"
-          if [ "${{ matrix.link }}" = "shared" ]; then
-            SHARED_LIBS="ON"
-          fi
+          cmake -B build -G "Visual Studio 17 2022" -A x64 `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DOMEGACONF_USE_CPP20=${{ matrix.use_cpp20 }} `
+            -DBUILD_SHARED_LIBS=${{ matrix.shared }} `
+            -DOMEGACONF_BUILD_TESTS=ON `
+            -DOMEGACONF_BUILD_SAMPLES=ON
 
+      - name: Configure CMake (Linux)
+        if: runner.os == 'Linux'
+        run: |
           cmake -B build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DOMEGACONF_USE_CPP20=${USE_CPP20} \
-            -DBUILD_SHARED_LIBS=${SHARED_LIBS} \
+            -DOMEGACONF_USE_CPP20=${{ matrix.use_cpp20 }} \
+            -DBUILD_SHARED_LIBS=${{ matrix.shared }} \
             -DOMEGACONF_BUILD_TESTS=ON \
             -DOMEGACONF_BUILD_SAMPLES=ON
 
       - name: Build
-        shell: bash
         run: cmake --build build --config Release --parallel
 
       - name: Run Tests
-        shell: bash
         run: ctest --test-dir build --output-on-failure -C Release
